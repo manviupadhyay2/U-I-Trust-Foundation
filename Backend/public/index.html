@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+</head>
+<body>
+  <h1>Student Dashboard</h1>
+  <div>
+    <h2>Create Student</h2>
+    <form id="create-student-form">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="text" id="info" placeholder="Info">
+      <input type="text" id="grade" placeholder="Grade" required>
+      <textarea id="topicsLearnt" placeholder="Topics Learnt (comma separated)"></textarea>
+      <textarea id="topicsToLearn" placeholder="Topics To Learn (comma separated)"></textarea>
+      <input type="number" id="sessionsAttended" placeholder="Sessions Attended">
+      <button type="submit">Create</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Update Assessment</h2>
+    <form id="update-assessment-form">
+      <input type="text" id="studentId" placeholder="Student ID" required>
+      <input type="text" id="assessmentId" placeholder="Assessment ID" required>
+      <input type="number" id="pretest" placeholder="Pretest Score">
+      <input type="number" id="posttest" placeholder="Posttest Score">
+      <button type="submit">Update</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('create-student-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const info = document.getElementById('info').value;
+      const grade = document.getElementById('grade').value;
+      const topicsLearnt = document.getElementById('topicsLearnt').value.split(',');
+      const topicsToLearn = document.getElementById('topicsToLearn').value.split(',');
+      const sessionsAttended = document.getElementById('sessionsAttended').value;
+
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, info, grade, topicsLearnt, topicsToLearn, sessionsAttended })
+      });
+
+      const result = await response.json();
+      alert('Student created: ' + JSON.stringify(result));
+    });
+
+    document.getElementById('update-assessment-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const studentId = document.getElementById('studentId').value;
+      const assessmentId = document.getElementById('assessmentId').value;
+      const pretest = document.getElementById('pretest').value;
+      const posttest = document.getElementById('posttest').value;
+
+      if (pretest) {
+        const response = await fetch(`/api/students/${studentId}/assessments/${assessmentId}/pretest`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pretest })
+        });
+
+        const result = await response.json();
+        alert('Pretest updated: ' + JSON.stringify(result));
+      }
+
+      if (posttest) {
+        const response = await fetch(`/api/students/${studentId}/assessments/${assessmentId}/posttest`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ posttest })
+        });
+
+        const result = await response.json();
+        alert('Posttest updated: ' + JSON.stringify(result));
+      }
+    });
+  </script>
+</body>
+</html>
